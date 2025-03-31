@@ -2,12 +2,8 @@
 .idea/
 .env
 
-
-.venv/
-
 __pycache__/
-*.py[cod]
-*$py.class
+
 
 /venv/
 /creds/
