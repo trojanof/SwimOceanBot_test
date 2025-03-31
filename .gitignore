@@ -1,0 +1,13 @@
+# created by virtualenv automatically
+.idea/
+.env
+
+
+.venv/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+/venv/
+/creds/
