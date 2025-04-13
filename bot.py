@@ -1,18 +1,17 @@
 import telebot
 import gspread
-
 from oauth2client.service_account import ServiceAccountCredentials
 from settings import TOKEN, SPREADSHEET_ID, WORKSHEET_NAME, user_column_map, SCOPE
+from datetime import datetime
 
 CREDS_FILE = './creds/so_test.json'  # Путь к файлу credential.json
 
 # Инициализация бота
 bot = telebot.TeleBot(TOKEN)
 
-
-# /todo Сделать привязку текущей даты к строке таблицы, чтобы метры записывались в нужную дату.
-#  Либо костыльно, либо считывать таблицу
-
+# /todo захостить бота и сделать его автономным
+# /todo еще есть идея создать команду, которая будет позволять пользователю записывать метры за старые даты,
+#  то есть команда дата +метры: 10.04 +1000
 
 # Функция для подключения к Google Sheets
 def get_gsheet_client():
@@ -23,14 +22,20 @@ def get_gsheet_client():
 
 # Функция для записи данных в Google Sheets
 def write_to_sheet(value, usr_id):
+    """Берем текущую дату"""
+    today = datetime.now().strftime("%d.%m.%Y")  # -> "13.04.2025"
+
     try:
         client = get_gsheet_client()
         sheet = client.open_by_key(SPREADSHEET_ID).worksheet(WORKSHEET_NAME)
 
+        """Ищем строку с сегодняшней датой"""
+        dates = sheet.col_values(1)  # Получаем все даты из столбца A
+
         if user_column_map[usr_id]:
             column = user_column_map[usr_id]  # вытаскиваем из словаря столбец пользователя по его tg-id
-            last_row = len(sheet.col_values(column))  # считаем, сколько в этом столбце уже есть записей
-            sheet.update_cell(last_row + 1, column, value)  # добавляем в последнюю ячейку определенного столбца данные
+            row_num = dates.index(today) + 1  # +1 т.к. нумерация с 1
+            sheet.update_cell(row_num, column, value)  # добавляем в последнюю ячейку определенного столбца данные
             print(f'Value "{value}" appended to sheet')
 
     except Exception as e:
