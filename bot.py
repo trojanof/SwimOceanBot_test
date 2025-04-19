@@ -119,8 +119,5 @@ def handle_start(message):
     bot.reply_to(message, "Hello! I'm a bot that records numbers from messages starting with '+' into a Google Sheet.")
 
 
-# Запуск бота
-if __name__ == '__main__':
-    print('Bot is running...')
-    bot.remove_webhook()
-    bot.polling(none_stop=True, interval=0)
+st.print('Bot is running...')
+bot.polling(none_stop=True, interval=0)
