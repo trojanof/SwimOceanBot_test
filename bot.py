@@ -119,5 +119,5 @@ def handle_start(message):
     bot.reply_to(message, "Hello! I'm a bot that records numbers from messages starting with '+' into a Google Sheet.")
 
 
-st.print('Bot is running...')
+st.write('Bot is running...')
 bot.polling(none_stop=True, interval=0)
