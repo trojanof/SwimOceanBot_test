@@ -46,7 +46,7 @@ def write_to_sheet(value, usr_id, date):
             print(user_column_map[usr_id])
             usr_name = user_column_map[usr_id]  # вытаскиваем из словаря столбец пользователя по его tg-id
             col_names = sheet.row_values(1) # список всех имен пользователей
-            col_index = col_names.index(usr_name)
+            col_index = col_names.index(usr_name) + 1
             row_num = dates.index(date) + 1  # +1 т.к. нумерация с 1
             print(type(row_num))
             sheet.update_cell(row_num, col_index, value)  # добавляем в последнюю ячейку определенного столбца данные
