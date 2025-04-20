@@ -2,13 +2,15 @@ import json
 from tempfile import TemporaryDirectory
 from pathlib import Path
 import streamlit as st
+from streamlit.runtime.scriptrunner import add_script_run_ctx,get_script_run_ctx
+from subprocess import Popen
 import telebot
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from settings import TOKEN, SPREADSHEET_ID, WORKSHEET_NAME, user_column_map, SCOPE
 from datetime import datetime
 
-# CREDS_FILE = './creds/so.json'  # Путь к файлу credential.json
+# ctx = get_script_run_ctx()
 
 # Инициализация бота
 bot = telebot.TeleBot(TOKEN)
@@ -28,6 +30,7 @@ def get_gsheet_client():
         f.write(json.dumps(creds_obj, indent=2))
     creds = ServiceAccountCredentials.from_json_keyfile_name(json_path, SCOPE)
     client = gspread.authorize(creds)
+    tmp_dir.cleanup()
     return client
 
 
@@ -79,6 +82,7 @@ def handle_number_message(message):
     # list_of_data.append(number)  # добавляем число в список
     # count_of_dist += int(number)  # увеличиваем общий счетчик
     # bot.reply_to(message, f'Number {number} has been recorded.')
+    
     bot.set_message_reaction(chat_id=message.chat.id,
                              message_id=message.id,
                              reaction=[telebot.types.ReactionTypeEmoji("✍")]
@@ -91,7 +95,7 @@ def handle_number_message(message):
         message.text.split()) == 2)
 def handle_number_with_data_message(message):
     number = message.text.split()[0][1:]
-    date = str(message.text.split()[1])
+    date = str(message.text.split()[1]) # ToDo проверять формат даты 
     user_id = str(message.from_user.id)
     print(f'ID пользователя, который ввел данные: {user_id}')
     write_to_sheet(number, user_id, date)  # записываем число в таблицу
@@ -120,4 +124,9 @@ def handle_start(message):
 
 
 st.write('Bot is running...')
+st.checkbox('bot works!')
 bot.polling(none_stop=True, interval=0)
+
+# process = Popen(['python','bot.py'])
+# add_script_run_ctx(process,ctx)
+st.stop()
